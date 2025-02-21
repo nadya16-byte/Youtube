@@ -1,0 +1,261 @@
+---
+title: "Problem Set 7"
+author: "Nadya Paschall"
+date: "Due Date: 2024-10-25"
+output:
+  pdf_document: default
+  html_document: default
+subtitle: Multivariate Visualization
+institute: Vanderbilt University
+---
+
+```{r,include=F}
+knitr::opts_chunk$set(error=TRUE)
+```
+
+
+## Getting Set Up
+
+Open `RStudio` and create a new RMarkDown file (`.Rmd`) by going to `File -> New File -> R Markdown...`.
+Accept defaults and save this file as `[LAST NAME]_ps7.Rmd` to your `code` folder.
+
+Copy and paste the contents of this `.Rmd` file into your `[LAST NAME]_ps7.Rmd` file. Then change the `author: [Your Name]` to your name.
+
+We will be using a new dataset called `youtube_individual.rds` which can be found on the course [github page](https://github.com/jbisbee1/ISP_Data_Science_2024/raw/main/data/youtube_individual.rds). The codebook for this dataset is produced below. All ideology measures are coded such that negative values indicate more liberal content and positive values indicate more conservative content.
+
+| Name           | Description                                                                               |
+|----------------|:------------------------------------------------------------------------------------------|
+| ResponseId         | A unique code for each respondent to the survey   |
+| ideo_recommendation   | The average ideology of all recommendations shown to the respondent             |
+| ideo_current   | The average ideology of all current videos the respondent was watching when they were shown recommendations      |
+| ideo_watch        | The average ideology of all videos the respondent has ever watched on YouTube (their "watch history") |
+| nReccs       | The total number of recommendations the respondent was shown during the survey                                    |
+| YOB           | The year the respondent was born                                              |
+| education     | The respondent's highest level of education                                  |
+| gender   | The respondent's gender                               |
+| income   | The respondent's total household income                               |
+| party_id   | The respondent's self-reported partisanship                               |
+| ideology   | The respondent's self-reported ideology                               |
+| race   | The respondent's race                               |
+| age   | The respondent's age at the time of the survey                               |
+
+All of the following questions should be answered in this `.Rmd` file. There are code chunks with incomplete code that need to be filled in. 
+
+This problem set is worth 5 total points, plus **one** extra credit question. However, there are also additional opportunities for additional points in problem 5 and the extra credit question itself. Note that these additional points are **very hard**. They are designed for the students who claimed that the course is easy on the midterm evals. I encourage you all to attempt all extra credit, but don't worry if you don't get the super hard ones. 
+
+The point values for each question are indicated in brackets below. To receive full credit, you must have the correct code. In addition, some questions ask you to provide a written response in addition to the code.
+All of the following questions should be answered in this `.Rmd` file. There are code chunks with incomplete code that need to be filled in. To submit, compile (i.e., `knit`) the completed problem set and upload the PDF file to Brightspace on Friday by midnight. Instructions for how to compile the output as a PDF can be found in [Problem Set 0](https://github.com/jbisbee1/DS1000_F2024/blob/main/Psets/ds1000_pset_0.pdf) and in this [gif tutorial](https://github.com/jbisbee1/DS1000_F2024/blob/main/Psets/save_as_pdf.gif). 
+
+This problem set is worth 5 total points, plus 1 extra credit point. The point values for each question are indicated in brackets below. To receive full credit, you must have the correct code. In addition, some questions ask you to provide a written response in addition to the code.
+
+You will be deducted 1 point for each day late the problem set is submitted, and 1 point for failing to submit in the correct format.
+
+You are free to rely on whatever resources you need to complete this problem set, including lecture notes, lecture presentations, Google, your classmates...you name it. However, the final submission must be complete by you. There are no group assignments.
+
+*Note that the TAs and professors will not respond to Campuswire posts after 5PM on Friday, so don't wait until the last minute to get started!*
+
+**Good luck!**
+
+*Copy the link to ChatGPT you used here: _________________
+
+## Question 0
+*Require `tidyverse` and load the `youtube_individual.rds` data to an object called `yt`.*
+
+```{r}
+require(tidyverse)
+yt <- read_rds("https://github.com/jbisbee1/DS1000_F2024/raw/refs/heads/main/data/youtube_individual.rds")
+```
+
+## Question 1 [1 point]
+*We are interested in how the YouTube recommendation algorithm works. These data are collected from real users, logged into their real YouTube accounts, allowing us to see who gets recommended which videos. We will investigate three research questions in this problem set:*
+
+*1. What is the relationship between average ideology of recommendations shown to each user, and the average ideology of all the videos the user has watched?*
+
+*2. What is the relationship between the average ideology of recommendations shown to each user, and the average ideology of the current video the user was watching when they were shown the recommendation?*
+
+*3. Which of these relationships is stronger? Why?*
+
+*Start by answering all three of these research questions, and explaining your thinking. Be very precise about your assumptions!*
+
+> 1. This relationship examines whether the youtube recommendation algorithem personalizes what they show the user based on the viewing history. Therefore, youtube provides recommendations with a similar ideology to the average of the content the user has watched. This would show a positive correlation between the average ideology of all videos and the recommended videos.
+2. This relationship determines if the recommendations are aligned closely with teh ideologies of the videos that the user is currently watching rather than their past history.This is to see if the recommendations are based on recent activity or past and if youtibe sees that one is more benefiticual than the other.My assumption would be that the algorith considers the current vidoes as a primary factor when choosing recommendations. If they do that, then youtube should see more people clicking on the recommendations, showin a positive correlation.
+3. Lastly, this relationship can determine whether youtibe's recommendation algorithm gives more incentive towards the users viewing history or current view sessions when making recommendations. If the platform goes more on historical videos, then there is a stronger relationship between users and their past watch history. However if they use current video sessions, then there would be a stronger relationship between them.
+
+## Question 2 [1 point]
+*Based on your previous answer, which variables are the $X$ (predictors) and which are the $Y$ (outcome) variables?*
+
+> The x variables would be ideo_currrent and ideo_watch. The Y variable would be ideo_recommendation.
+
+*Now create univariate visualizations of all three variables, making sure to label your plots clearly.*
+
+```{r}
+yt%>%
+  ggplot(aes(x = ideo_recommendation)) +
+  geom_histogram(binwidth = 0.5, fill = "pink", color = "black")+
+  labs(x = "Average Recommendation Ideology", y = "Count", title = "Recommendation Ideology")
+
+# Univariate visualization of X1
+yt%>%
+  ggplot(aes(x= ideo_watch))+
+  geom_histogram(binwidth = 0.5, fill = "pink", color = "black")+
+  labs(x = "User Watch History Ideology", y = "Count", title = "User Watch History Ideology")
+
+# Univariate visualization of X2
+yt%>%
+  ggplot(aes(x= ideo_current))+
+  geom_histogram(binwidth = 0.5, fill = "pink", color = "black")+
+  labs(x = "Current Video Ideology", y = "Count", title = "Current Video Ideology")
+```
+
+## Question 3 [1 point]
+
+*Let's focus on the first research question. Create a multivariate visualization of the relationship between these two variables, making sure to put the $X$ variable on the x-axis, and the $Y$ variable on the y-axis. Add a straight line of best fit. Does the data support your theory?*
+
+```{r}
+# Multviariate visualization of Y and X1
+yt%>%
+  ggplot(aes(x = ideo_watch, y = ideo_recommendation))+
+  geom_point(alpha = .6, color = "blue")+
+  geom_smooth(method = "lm", se = F, color = "green")+
+  labs(x = "User Watch History Ideology",
+       y = "Recommendation Ideology",
+       title = "Relationship Between User Watch History and Recommendation Idelogy")
+  
+```
+
+> Since the line of best fit follows a positive slope, the respondents who have a watch history with higher ideology are more likely to be shown recommendations with high scores as well. THis could support the idea that youtubes recommendation algorith alignsrecommendations with teh users viewing history.
+
+*Now run a linear regression using the `lm()` function and save the result to an object called `model_watch`.*
+
+```{r}
+model_watch <- lm(formula = ideo_recommendation ~ ideo_watch, data = yt) # Indicate where the data is stored here.
+```
+
+*Using either the `summary()` function (from base `R`) or the `tidy()` function (from the `broom` package), print the regression result.*
+
+```{r}
+require(broom)
+tidy(model_watch)
+```
+
+*In a few sentences, summarize the results of the regression output. This requires you to translate the statistical measures into plain English, making sure to refer to the units for both the $X$ and $Y$ variables. In addition, you must determine whether the regression result supports your hypothesis, and discuss your confidence in your answer, referring to the p-value.*
+
+> Intercept: With a very low P value of 5.74 e-25, the data is stastically significant. This indicates that there is a tendency toward the ideology in recommendations.
+Ideo_watch: Again, with a low p value of 3.31e-57, htis data is statisically strong. This means that for each unit increase in the ideology score of he users watch history, the average ideology recommendation increases by .558. This is a positive slope, supporting the hypothesis.
+Overall the results show a strong and positive relationship between the average ideology and the users watch history. 
+
+## Question 4 [1 point]
+
+*Now let's do the same thing for the second research question. First, create the multivariate visualization and determine whether it is consistent with your theory.*
+
+```{r}
+# Multviariate visualization of Y and X2
+yt%>%
+  ggplot(aes(x = ideo_current, y = ideo_recommendation))+
+  geom_point(alpha = .5, color = "purple")+
+  geom_smooth(method = "lm", se = F, color = "pink")+
+  labs(x = "Current Video Ideology", 
+       y = "Recommendation Ideology",
+       title = "Relationship Bwtween Current Video and Recommendation Ideology")
+```
+
+> Since the line of best fit a clearly positive, it would support the hypothesis that the ideology og the current video influences the ideology of recommendations that are shown. Youtubes recommendation algorith puts content similar to the current video the user is watching.
+
+*Second, run a new regression and save the result to `model_current`. Then print the result using either `summary()` or `tidy()`, as before.*
+
+```{r}
+# [RUBRIC: 0.25 points - either right or wrong.]
+model_current <- lm(formula = ideo_recommendation ~ ideo_current,
+             data = yt) # Indicate where the data is stored here.
+
+tidy(model_current)
+```
+
+*Finally, describe the result in plain English, and interpret it in light of your hypothesis. How confident are you?*
+
+> Intercept: With an estimate of 0.0580 and p-value of 2.89e- 57, the data is statistically significant. This suggests that when the current video is 0, the recommendation is 0.058.
+Ideo_current: With a even smaller p value of 9.94e-257, this data is extremely significant towards hte relationship. The positive slope means that for every unit of increase in the current video ideology, the average ideology increaseses by .743. This supports the hypothesis that youtubes recommendation algorith tends to align more closely with the ideology of the currenly watched video. I am about 89% confident that this method is prioritized over the previous one.
+
+
+*Based* **ONLY** *on the preceding analysis, are you able to answer research question 3?*
+
+> From research questions 1 and 2, it appears that the slope is greater and the p value is more significant for the current video than the user's watch history. This means immediation content choices are recommended more than the overall ideology of hte users watch history.
+
+
+## Question 5 [1 point + 2 EC points]
+*Now let's evaluate the models. Start by calculating the "mistakes" (i.e., the "errors" or the "residuals") generated by both models and saving these as new columns (`errors_watch` and `errors_current`) in the `yt` dataset.*
+
+```{r}
+# Calculating errors [RUBRIC: 0.1 point - either they get it or they don't]
+yt <- yt %>%
+  mutate(preds_watch = predict(model_watch, newdata = yt), # Get the predicted values from the first model (Yhat)
+         preds_current = predict(model_current, newdata = yt)) %>% # Get the predicted values from the second model (Yhat)
+  mutate(errors_watch = ideo_recommendation - preds_watch, # Calculate errors for the first model (Y - Yhat)
+         errors_current = ideo_recommendation - preds_current) # Calculate errors for the second model (Y - Yhat)
+```
+
+*Now create two univariate visualization of these errors. Based on this result, which model looks better? Why? EC [+1 point]: Plot both errors on the same graph using `pivot_longer()`.*
+
+```{r}
+# Univariate visualization of watch history model errors 
+yt %>%
+  ggplot(aes(x = errors_watch)) + # Put the errors from the first model on the x-axis
+  geom_histogram(binwidth = .05, fill ="purple", color = "black") +  # Choose the best geom_...() to visualize based on the variable's type
+  labs(x = "Errors for Watch History", 
+       y ="Count", 
+       title = "Errors from Watch History") # Provide clear labels to help a stranger understand!
+
+# Univariate visualization of current video model errors 
+yt %>%
+  ggplot(aes(x = errors_current)) + # Put the errors from the first model on the x-axis
+  geom_histogram(binwidth = 0.05, fill = "lightblue", color = "black") +  # Choose the best geom_...() to visualize based on the variable's type
+  labs(x = " Errors for Current Video", 
+       y ="Count", 
+       title = "Errors from Current Video") # Provide clear labels to help a stranger understand!
+
+
+# EC [1 point]: Plot both errors on a single plot. Hint: use pivot_longer().
+```
+
+> Errors from Current video looks better because even those both graphs have a peak at the 0.0 mark, this graph does not have as much discrepences as the history graph. Current videos goes from -.3 to .2 whilst the history goes from -.4 to .4.
+
+*Finally, create a multivariate visualization of both sets of errors, comparing them against the $X$ variable. Based on this result, which model looks better? Why? EC [+1 point]: Create two plots side-by-side using facet_wrap(). This is SUPER HARD, so don't worry if you can't get it.*
+
+```{r}
+# Multivariate visualization of watch history errors
+yt %>%
+  ggplot(aes(x = ideo_watch,      # Put the predictor on the x-axis
+             y = errors_watch)) + # Put the errors on the y-axis
+  geom_point(alpha = .5, color = "blue") + # Choose the best geom_...()
+  geom_smooth(method = "lm", se = F, color = "red") + # Add a curvey line of best fit
+  geom_hline(yintercept = 0, linetype = "dashed", color = "pink") + # Add a horizontal dashed line at zero
+  labs(x = "User Watch History Ideology", 
+       y = "Errors for Watch History", 
+       title = "Errors from Watch History vs Watch History Ideology") # Provide clear labels to help a stranger understand!
+
+
+# Multivariate visualization of current video errors
+yt %>%
+  ggplot(aes(x = ideo_watch,      # Put the predictor on the x-axis
+             y = errors_current)) + # Put the errors on the y-axis
+  geom_point(alpha = .5, color = "purple") + # Choose the best geom_...()
+  geom_smooth(method = "lm", se = F, color = "orange") + # Add a curvey line of best fit
+  geom_hline(yintercept = 0, linetype = "dashed", color = "blue") + # Add a horizontal dashed line at zero
+  labs(x = "User  Current Ideology", 
+       y = "Errors for Current Video", 
+       title = "Errors from Current Video vs Current Video Ideology") # Provide clear labels to help a stranger understand!
+
+# EC [1 point]: Try to create two plots side-by-side. (SUPER HARD)
+
+```
+
+> For thes models, the history model looks better. The errors for both ideology and errors are closer to 0 and there is no apparent slope but  the current watch history who has a positive slope. This means that there is more error between the values for this model.
+
+## Extra Credit [1 point]
+*Calculate the* **R***oot* **M***ean* **S***quared* **E***rror (RMSE) using 100-fold cross validation with a 50-50 split for both models. How bad are the first model's mistakes on average? How bad are the second model's mistakes? Which model seems better? Remember to talk about the result in terms of the range of values of the outcome variable! EC [+1 point]: plot the errors by the model using geom_boxplot(). HINT: you'll need to use pivot_longer() to get the data shaped correctly.*
+
+```{r,message=F,warning=F}
+# INSERT CODE HERE
+```
+
+> Write answer here
